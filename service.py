@@ -3,6 +3,11 @@ from typing import Any, Optional
 
 
 def read_json(path: str) -> list[dict]:
+    """
+    Reads a JSON file and returns a list of dictionaries.
+    :param path: the file path
+    :return: the list of dictionaries
+    """
     data = []
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -16,6 +21,11 @@ def read_json(path: str) -> list[dict]:
 
 
 def write_json(path: str, data: list[dict]) -> None:
+    """
+    Writes a list of dictionaries to a JSON file.
+    :param path: the file path
+    :param data: the list of dictionaries to write
+    """
     with open(path, "w", encoding="utf-8") as f:
         json.dump(
             data,
