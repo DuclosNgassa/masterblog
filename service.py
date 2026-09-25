@@ -1,7 +1,9 @@
 import json
+from typing import Any
 
-def read_json(path: str) -> dict:
-    data = {}
+
+def read_json(path: str) -> list[dict]:
+    data = []
     try:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -13,7 +15,7 @@ def read_json(path: str) -> dict:
     return data
 
 
-def write_json(path: str, data: str):
+def write_json(path: str, data: list[dict]) -> None:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(
             data,
