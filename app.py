@@ -1,11 +1,11 @@
-from email.policy import default
-from typing import Any
-
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 
 import service
 
 app = Flask(__name__)
+
+# Set a secret key for session signing
+app.secret_key = "super-secret-key-change-in-production"
 
 blog_posts:list[dict] = service.read_json('db/posts.json')
 
@@ -29,6 +29,26 @@ def add():
         return redirect(url_for('index'))
 
     return render_template('add.html')
+
+
+@app.route("/delete/<int:post_id>", methods=['POST'])
+def delete(post_id):
+    global blog_posts  # Declare global to reassign the list
+
+    new_blog_posts = [p for p in blog_posts if p.get('id') != post_id]
+
+    if len(new_blog_posts) == len(blog_posts):
+        flash("Post doesn't exist", "error")
+        return redirect(url_for("index"))
+
+    # 1. Update in-memory global list
+    blog_posts = new_blog_posts
+
+    # 2. Persist changes to JSON file
+    service.write_json('db/posts.json', blog_posts)
+
+    flash("Post deleted successfully!", "success")
+    return redirect(url_for("index"))
 
 
 if __name__ == '__main__':
