@@ -1,0 +1,24 @@
+import json
+
+def read_json(path: str) -> dict:
+    data = {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        print(f"Error: The file '{path}' was not found.")
+    except json.decoder.JSONDecodeError as e:
+        print(f"Error: Failed to decode JSON from '{path}': {e}")
+
+    return data
+
+
+def write_json(path: str, data: str):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(
+            data,
+            f,
+            ensure_ascii=False,
+            sort_keys=True,
+            indent=4,
+        )
