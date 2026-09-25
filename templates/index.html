@@ -18,6 +18,11 @@
               onsubmit="return confirm('Are you sure you want to delete this post?');">
             <button type="submit" class="btn-delete">Delete</button>
         </form>
+            <!-- Update Form -->
+        <form action="{{ url_for('update', post_id=post['id']) }}" method="GET">
+            <button type="submit" class="btn-edit">Edit</button>
+        </form>
+
     </div>
 {% endfor %}
 

@@ -1,4 +1,7 @@
+from typing import Literal
+
 from flask import Flask, render_template, request, redirect, url_for, flash
+from werkzeug import Response
 
 import service
 
@@ -31,7 +34,27 @@ def add():
     return render_template('add.html')
 
 
-@app.route("/delete/<int:post_id>", methods=['POST'])
+@app.route('/update/<post_id>', methods=['GET','POST'])
+def update(post_id):
+    global blog_posts
+    print("Heloo")
+    if request.method == 'POST':
+        # Update the post in the JSON file
+        # Redirect back to index
+
+        return do_update(blog_posts, post_id)
+    else:
+        post = service.fetch_post_by_id(post_id, blog_posts)
+        if post is None:
+            # Post not found
+            print("Post not found")
+            return "Post not found", 404
+        else:
+            # Else, it's a GET request
+            # So display the update.html page
+            return render_template('update.html', post=post)
+
+@app.route('/delete/<int:post_id>', methods=['POST'])
 def delete(post_id):
     global blog_posts  # Declare global to reassign the list
 
@@ -48,6 +71,27 @@ def delete(post_id):
     service.write_json('db/posts.json', blog_posts)
 
     flash("Post deleted successfully!", "success")
+    return redirect(url_for("index"))
+
+
+def do_update(posts: list[dict], post_id) -> tuple[Literal["Post not found"], Literal[404]] | Response:
+    title = request.form.get('title')
+    content = request.form.get('content')
+    author = request.form.get('author')
+    post_found = False
+    for index_post, _ in enumerate(posts):
+        if str(posts[index_post]['id']) == str(post_id):
+            posts[index_post]['title'] = title
+            posts[index_post]['content'] = content
+            posts[index_post]['author'] = author
+            post_found = True
+        break
+    if not post_found:
+        return "Post not found", 404
+    else:
+        # Update the db
+        service.write_json('db/posts.json', posts)
+        flash("Post updated successfully", "success")
     return redirect(url_for("index"))
 
 
